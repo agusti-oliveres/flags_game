@@ -26,6 +26,8 @@
     </div>
     <script>
         let correctAnswer = '';
+        let correctFlagCode = ''; // Store flag code for later use
+        let correctAvgColor = ''; // Store average color for later use
         let correctGuesses = 0;
         let totalGuesses = 0;
         let isColorMode = false;
@@ -40,14 +42,20 @@
                 .then(response => response.json())
                 .then(data => {
                     correctAnswer = data.correct_answer;
+                    correctFlagCode = data.code; // Save the flag code for later use
+                    correctAvgColor = data.avg_color; // Save the average color for later use
                     displayOptions(data.options);
                     document.getElementById('result').textContent = '';
                     document.getElementById('result').className = '';
-                    
+
+                    // In Color Mode, initially only show the average color
                     if (isColorMode) {
-                        document.getElementById('flag-container').innerHTML = `<div id="color-box" style="background-color: ${data.avg_color};"></div>`;
+                        document.getElementById('flag-container').innerHTML = `
+                            <div id="color-box" style="background-color: ${correctAvgColor}; width: 200px; height: 133px;"></div>
+                        `;
                     } else {
-                        document.getElementById('flag-container').innerHTML = `<img id="flag" src="https://flagcdn.com/w320/${data.code}.png" alt="Country Flag">`;
+                        // In Flag Mode, show the flag
+                        document.getElementById('flag-container').innerHTML = `<img id="flag" src="https://flagcdn.com/w320/${correctFlagCode}.png" alt="Country Flag">`;
                     }
                 });
         }
@@ -67,6 +75,7 @@
         function checkGuess(guess) {
             totalGuesses++;
             const resultElement = document.getElementById('result');
+            
             if (guess === correctAnswer) {
                 correctGuesses++;
                 resultElement.textContent = 'Correct! Well done!';
@@ -75,9 +84,24 @@
                 resultElement.textContent = `Wrong. The correct answer was ${correctAnswer}.`;
                 resultElement.className = 'incorrect';
             }
+            
             updateScore();
             disableOptions();
-            setTimeout(getNewFlag, 2000);
+
+            // In Color Mode, after the guess, reveal the original flag next to the color box for 2 seconds
+            if (isColorMode) {
+                setTimeout(() => {
+                    document.getElementById('flag-container').innerHTML = `
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <div id="color-box" style="background-color: ${correctAvgColor}; width: 200px; height: 133px;"></div>
+                            <img id="flag" src="https://flagcdn.com/w320/${correctFlagCode}.png" alt="Country Flag" style="width: 150px;">
+                        </div>
+                    `;
+                }, 500); // Show the flag 500ms after the guess is made
+            }
+
+            // Switch to the next flag after 2 seconds of showing the original flag
+            setTimeout(getNewFlag, 2500);
         }
 
         function disableOptions() {
