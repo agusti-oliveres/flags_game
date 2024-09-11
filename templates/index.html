@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flag Guessing Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Guess the Country</h1>
+        <div class="toggle-container">
+            <span>Flag Mode</span>
+            <label class="switch">
+                <input type="checkbox" id="game-mode-toggle">
+                <span class="slider round"></span>
+            </label>
+            <span>Color Mode</span>
+        </div>
+        <div id="flag-container">
+            <img id="flag" src="" alt="Country Flag">
+        </div>
+        <div id="options-container"></div>
+        <div id="result"></div>
+        <div id="score">Score: <span id="correct-guesses">0</span> / <span id="total-guesses">0</span></div>
+    </div>
+    <script>
+        let correctAnswer = '';
+        let correctGuesses = 0;
+        let totalGuesses = 0;
+        let isColorMode = false;
+
+        function updateScore() {
+            document.getElementById('correct-guesses').textContent = correctGuesses;
+            document.getElementById('total-guesses').textContent = totalGuesses;
+        }
+
+        function getNewFlag() {
+            fetch('/get_flag')
+                .then(response => response.json())
+                .then(data => {
+                    correctAnswer = data.correct_answer;
+                    displayOptions(data.options);
+                    document.getElementById('result').textContent = '';
+                    document.getElementById('result').className = '';
+                    
+                    if (isColorMode) {
+                        document.getElementById('flag-container').innerHTML = `<div id="color-box" style="background-color: ${data.avg_color};"></div>`;
+                    } else {
+                        document.getElementById('flag-container').innerHTML = `<img id="flag" src="https://flagcdn.com/w320/${data.code}.png" alt="Country Flag">`;
+                    }
+                });
+        }
+
+        function displayOptions(options) {
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.addEventListener('click', () => checkGuess(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkGuess(guess) {
+            totalGuesses++;
+            const resultElement = document.getElementById('result');
+            if (guess === correctAnswer) {
+                correctGuesses++;
+                resultElement.textContent = 'Correct! Well done!';
+                resultElement.className = 'correct';
+            } else {
+                resultElement.textContent = `Wrong. The correct answer was ${correctAnswer}.`;
+                resultElement.className = 'incorrect';
+            }
+            updateScore();
+            disableOptions();
+            setTimeout(getNewFlag, 2000);
+        }
+
+        function disableOptions() {
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        document.getElementById('game-mode-toggle').addEventListener('change', function() {
+            isColorMode = this.checked;
+            getNewFlag();
+        });
+
+        getNewFlag();
+        updateScore();
+    </script>
+</body>
+</html>
