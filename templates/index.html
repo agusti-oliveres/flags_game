@@ -17,6 +17,34 @@
             </label>
             <span>Color Mode</span>
         </div>
+
+        <!-- New section for user to input colors in Color Mode -->
+        <div id="custom-colors-container" style="display:none;">
+            <h2>Custom Color Input</h2>
+            <div id="color-inputs-section" style="width: 100%; display: flex; justify-content: center;">
+                <table id="color-table" style="width: auto;">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Weight</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="display: flex; justify-content: center; margin-top: 10px;">
+                <button id="add-color-button" class="button-style">Add Color</button> <!-- Use "button-style" class -->
+            </div>
+            
+            <!-- Result section for the average color as a thin rectangle below the table -->
+            <div id="average-color-result" style="display: flex; justify-content: center; margin-top: 20px;">
+                <div id="average-color-box" style="width: 100%; max-width: 500px; height: 40px; background-color: #fff; border: 1px solid #ccc;"></div>
+            </div>
+        </div>
+
         <div id="flag-container">
             <img id="flag" src="" alt="Country Flag">
         </div>
@@ -111,10 +139,83 @@
             });
         }
 
+        // Function to add a new row to the color input table
+        function addColorRow() {
+            const tableBody = document.querySelector('#color-table tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="color" class="color-input" value="#ffffff"></td>
+                <td><input type="number" class="percentage-input" value="1" min="1"></td>
+                <td><button type="button" class="remove-color-button button-style">Remove</button></td> <!-- Use "button-style" class -->
+            `;
+            tableBody.appendChild(row);
+
+            // Attach event listener to remove button
+            row.querySelector('.remove-color-button').addEventListener('click', function() {
+                row.remove();
+                calculateAverageColor(); // Recalculate average after removal
+            });
+
+            // Attach event listener to inputs to trigger recalculation when changed
+            row.querySelector('.color-input').addEventListener('input', calculateAverageColor);
+            row.querySelector('.percentage-input').addEventListener('input', calculateAverageColor);
+        }
+
+        // Calculate the weighted average color based on user input without restriction on total percentage
+        function calculateAverageColor() {
+            const colorInputs = document.querySelectorAll('.color-input');
+            const percentageInputs = document.querySelectorAll('.percentage-input');
+
+            let totalWeight = 0;
+            let totalRed = 0, totalGreen = 0, totalBlue = 0;
+
+            colorInputs.forEach((input, index) => {
+                const color = input.value;
+                const weight = parseFloat(percentageInputs[index].value) || 0;
+                totalWeight += weight;
+
+                const [r, g, b] = hexToRgb(color);
+                totalRed += r * weight;
+                totalGreen += g * weight;
+                totalBlue += b * weight;
+            });
+
+            // Calculate the average color based on relative weights
+            if (totalWeight > 0) {
+                const avgRed = totalRed / totalWeight;
+                const avgGreen = totalGreen / totalWeight;
+                const avgBlue = totalBlue / totalWeight;
+
+                const avgColor = rgbToHex(Math.round(avgRed), Math.round(avgGreen), Math.round(avgBlue));
+                document.getElementById('average-color-box').style.backgroundColor = avgColor;
+            }
+        }
+
+        // Utility functions to convert between hex and RGB
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+        }
+
+        function rgbToHex(r, g, b) {
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
+        }
+
         document.getElementById('game-mode-toggle').addEventListener('change', function() {
             isColorMode = this.checked;
+            if (isColorMode) {
+                document.getElementById('custom-colors-container').style.display = 'block'; // Show custom color section
+            } else {
+                document.getElementById('custom-colors-container').style.display = 'none'; // Hide custom color section
+            }
             getNewFlag();
         });
+
+        // Attach event listener to the "Add Color" button
+        document.getElementById('add-color-button').addEventListener('click', addColorRow);
+
+        // Initial call to add a color row by default
+        addColorRow();
 
         getNewFlag();
         updateScore();
