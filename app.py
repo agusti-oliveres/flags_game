@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import random
 import pycountry
 from PIL import Image
 import requests
 from io import BytesIO
+import os
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 
 # Get all countries
 countries = [{"name": country.name, "code": country.alpha_2.lower()} for country in pycountry.countries]
@@ -27,9 +28,10 @@ def get_average_color(flag_url):
             count += 1
     return f"#{int(r_total/count):02x}{int(g_total/count):02x}{int(b_total/count):02x}"
 
+# Serve index.html from the root directory
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_from_directory(os.getcwd(), 'index.html')  # Use current working directory
 
 @app.route('/get_flag')
 def get_flag():
