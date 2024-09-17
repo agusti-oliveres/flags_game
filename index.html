@@ -83,7 +83,7 @@
                         `;
                     } else {
                         // In Flag Mode, show the flag
-                        document.getElementById('flag-container').innerHTML = `<img id="flag" src="https://flagcdn.com/w320/${correctFlagCode}.png" alt="Country Flag">`;
+                        document.getElementById('flag-container').innerHTML = `<img id="flag" src="static/flags/${correctFlagCode}.png" alt="Country Flag">`;
                     }
                 });
         }
@@ -122,7 +122,7 @@
                     document.getElementById('flag-container').innerHTML = `
                         <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
                             <div id="color-box" style="background-color: ${correctAvgColor}; width: 200px; height: 133px;"></div>
-                            <img id="flag" src="https://flagcdn.com/w320/${correctFlagCode}.png" alt="Country Flag" style="height: 133px;">
+                            <img id="flag" src="static/flags/${correctFlagCode}.png" alt="Country Flag" style="height: 133px;">
                         </div>
                     `;
                 }, 500); // Show the flag 500ms after the guess is made
