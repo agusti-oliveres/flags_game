@@ -11,22 +11,33 @@ app = Flask(__name__)
 # Get all countries
 countries = [{"name": country.name, "code": country.alpha_2.lower()} for country in pycountry.countries]
 
-def get_average_color(flag_url):
-    response = requests.get(flag_url)
-    img = Image.open(BytesIO(response.content))
-    img = img.convert('RGB')
-    width, height = img.size
-    pixels = img.load()
-    r_total = g_total = b_total = 0
-    count = 0
-    for x in range(width):
-        for y in range(height):
-            r, g, b = pixels[x, y]
-            r_total += r
-            g_total += g
-            b_total += b
-            count += 1
-    return f"#{int(r_total/count):02x}{int(g_total/count):02x}{int(b_total/count):02x}"
+def get_average_color(flag_code):
+    # Path to the local flag file
+    flag_path = os.path.join('static', 'flags', f"{flag_code}.png")
+    
+    if os.path.exists(flag_path):
+        img = Image.open(flag_path)
+        img = img.convert('RGB')
+        width, height = img.size
+        pixels = img.load()
+        
+        r_total = g_total = b_total = 0
+        count = 0
+        for x in range(width):
+            for y in range(height):
+                r, g, b = pixels[x, y]
+                r_total += r
+                g_total += g
+                b_total += b
+                count += 1
+        
+        # Calculate the average color in hex format
+        return f"#{int(r_total/count):02x}{int(g_total/count):02x}{int(b_total/count):02x}"
+    
+    else:
+        # If the flag doesn't exist, return a fallback color (white or error color)
+        print(f"Flag image not found for code: {flag_code}")
+        return "#FFFFFF"  # Fallback color if flag not found
 
 # Serve index.html from the root directory
 @app.route('/')
@@ -45,8 +56,8 @@ def get_flag():
     
     random.shuffle(options)
     
-    flag_url = f"https://flagcdn.com/w320/{correct_country['code']}.png"
-    avg_color = get_average_color(flag_url)
+    flag_url = f"/static/flags/{correct_country['code']}.png"
+    avg_color = get_average_color(correct_country['code'])
     
     return jsonify({
         "code": correct_country["code"],
