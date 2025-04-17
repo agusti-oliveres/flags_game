@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f4f8;
+    color: #333;
+}
+
+#game-container {
+    text-align: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 90%;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+#flag-container {
+    width: 100%;
+    height: 200px; /* Fixed height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    overflow: hidden; /* Prevents image overflow if larger */
+}
+
+#flag {
+    max-width: 200px;  /* Limit width */
+    max-height: 133px; /* Limit height to maintain aspect ratio based on color box */
+    height: auto;     /* Maintain aspect ratio */
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    object-fit: contain; /* Scale the image while preserving its aspect ratio */
+}
+
+
+#color-box {
+    width: 200px;
+    height: 133px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#options-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.option-button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+}
+
+.option-button:hover {
+    background-color: #2980b9;
+}
+
+.option-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+#result {
+    margin-top: 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem;
+    border-radius: 5px;
+    min-height: 50px; /* Ensure space for messages */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.correct {
+    background-color: #e6f7ed;
+    color: #27ae60;
+}
+
+.incorrect {
+    background-color: #fce9e9;
+    color: #e74c3c;
+}
+
+#score {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 0 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Custom color input styles */
+#custom-colors-container {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+#custom-colors-container h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+#color-inputs-section table {
+    border-collapse: collapse;
+    margin: 0 auto; /* Center table */
+}
+
+#color-inputs-section th,
+#color-inputs-section td {
+    padding: 8px 12px;
+    text-align: center;
+}
+
+#color-inputs-section th {
+    font-weight: 600;
+    color: #333;
+}
+
+.color-input {
+    width: 50px;
+    height: 30px;
+    border: 1px solid #ccc;
+    padding: 0;
+    cursor: pointer;
+}
+
+.percentage-input {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.remove-color-button {
+    padding: 5px 10px; /* Smaller padding */
+    font-size: 0.9rem; /* Smaller font */
+}
+
+
+.button-style {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+    padding: 0.5rem 1rem; /* Consistent padding */
+    font-size: 1rem; /* Consistent font size */
+}
+
+.button-style:hover {
+    background-color: #2980b9;
+}
+
+.button-style:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    #game-container {
+        padding: 1.5rem;
+    }
+
+    #options-container {
+        grid-template-columns: 1fr;
+    }
+
+    #flag {
+        max-width: 150px; /* Smaller flags on mobile */
+    }
+
+     #color-box {
+        width: 150px; /* Smaller color box on mobile */
+        height: 100px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+}
